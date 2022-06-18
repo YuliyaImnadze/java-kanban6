@@ -11,7 +11,7 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    public HistoryManager historyManager = Managers.getDefaultHistory();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
@@ -37,19 +37,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskByID(int taskId) {
-        historyManager.add(tasks.get(taskId));
+        if (tasks.get(taskId) != null) {
+            historyManager.add(tasks.get(taskId));
+        }
         return tasks.get(taskId);
     }
 
     @Override
     public Epic getEpicByID(int epicId) {
-        historyManager.add(epics.get(epicId));
+        if (epics.get(epicId) != null) {
+            historyManager.add(epics.get(epicId));
+        }
         return epics.get(epicId);
     }
 
     @Override
     public SubTask getSubtaskByID(int subtaskId) {
-        historyManager.add(subTasks.get(subtaskId));
+        if (subTasks.get(subtaskId) != null) {
+            historyManager.add(subTasks.get(subtaskId));
+        }
         return subTasks.get(subtaskId);
     }
 
@@ -84,7 +90,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<SubTask> getSubTask(int epicId) {
+    public List<SubTask> getSubTask(int epicId) {
         Epic epic = epics.get(epicId);
         ArrayList<SubTask> subTaskArrayList = new ArrayList<>();
         List<Integer> subtasksFromEpic = epic.getSubTaskIDs();

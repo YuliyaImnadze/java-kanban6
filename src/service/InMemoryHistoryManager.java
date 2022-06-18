@@ -5,35 +5,22 @@ import task.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
 
     private List<Task> listHistory = new ArrayList<>();
-    private HashMap<Integer, Node> customLinkedList = new HashMap<>(); // новый хэшмэп
+    private final Map<Integer, Node> customLinkedList = new HashMap<>(); // новый хэшмэп
 
     private Node first;
     private Node last;
-    private int size = 0;
-
-
-  /*  @Override
-    public void add(Task task) {
-
-        if (listHistory.size() == LIST_SIZE) {
-            listHistory.remove(0);
-        }
-        if (task != null) {
-            listHistory.add(task);
-        }
-    } */
 
     @Override
     public void add(Task task) {
         if (customLinkedList.containsKey(task.getId())) {
             removeNode(customLinkedList.get(task.getId()));
             customLinkedList.remove(task.getId());
-            size--;
         }
         Node nodeAdded = linkLast(task); //После добавления задачи не забудьте обновить значение узла в HashMap.
         customLinkedList.put(task.getId(), nodeAdded);
@@ -49,14 +36,13 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             first = newNode;
         }
-        size++;
         return newNode;
     }
 
 
     public List<Task> getTasks() { // собирать все задачи из списка в обычный ArrayList
         List<Task> allListHistory = new ArrayList<>(); // другой лист???
-        Node node = customLinkedList.get(1);
+        Node node = first;
         while (node != null) {
             allListHistory.add(node.value);
             node = node.next;
@@ -66,13 +52,24 @@ public class InMemoryHistoryManager implements HistoryManager {
 
 
     public void removeNode(Node value) { //  В качестве параметра этот метод должен принимать объект Node — узел связного списка и вырезать его.
+
+        if (value == first) {
+            if (first.next != null)
+                first = first.next;
+        }
+
+        if (value == last) {
+            if (last.previous != null)
+                last = last.previous;
+        }
+
         if (value.previous != null) {
             value.previous.next = value.next;
-                if (value.next != null) {
-                    value.next.previous = value.previous;
-                }
+            if (value.next != null) {
+                value.next.previous = value.previous;
+            }
         }
-}
+    }
 
     @Override
     public List<Task> getHistory() {
@@ -84,22 +81,21 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (customLinkedList.containsKey(id)) {
             removeNode(customLinkedList.get(id));
             customLinkedList.remove(id);
-            size--;
         }
     }
 
 
-private static class Node {
-    private Node previous;
-    private Task value;
-    private Node next;
+    private static class Node {
+        private Node previous;
+        private Task value;
+        private Node next;
 
-    public Node(Node previous, Task value, Node next) {
-        this.previous = previous;
-        this.value = value;
-        this.next = next;
+        public Node(Node previous, Task value, Node next) {
+            this.previous = previous;
+            this.value = value;
+            this.next = next;
+        }
+
     }
-
-}
 }
 
