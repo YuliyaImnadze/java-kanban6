@@ -56,11 +56,15 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (value == first) {
             if (first.next != null)
                 first = first.next;
+            else
+                first = null;
         }
 
         if (value == last) {
             if (last.previous != null)
                 last = last.previous;
+            else
+                last = null;
         }
 
         if (value.previous != null) {
